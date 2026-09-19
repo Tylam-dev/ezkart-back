@@ -40,7 +40,7 @@ public class RepositorioAutenticacion : IRepositorioAutenticacion
             return Resultado<Usuario?>.Error("Error en BD", ex);
         }
     }
-    public async Task<Resultado<bool>> GuardarRefresToken(RefreshToken refreshToken)
+    public async Task<Resultado<bool>> GuardarRefresToken(RefreshToken refreshToken, Guid usuarioId)
     {
         try
         {
@@ -49,7 +49,8 @@ public class RepositorioAutenticacion : IRepositorioAutenticacion
             var refreshTokenNuevo = new Auth.Infrastructure.Persistencia.Entidades.RefreshToken()
             {
                 TokenHash = refreshToken.TokenHash,
-                Expiracion = refreshToken.Expiracion
+                Expiracion = refreshToken.Expiracion,
+                UsuarioId = usuarioId
             };
             _context.Add<Auth.Infrastructure.Persistencia.Entidades.RefreshToken>(refreshTokenNuevo);
             await _context.SaveChangesAsync();
@@ -135,4 +136,47 @@ public class RepositorioAutenticacion : IRepositorioAutenticacion
             return Resultado<bool>.Error("Error en DB", ex);
         }
     }
+    public async Task<Resultado<DateTime?>>ObtenerFechaCaducidadRefreshToken(string refreshTokenHash)
+    {
+        try
+        {
+            var fecha = await _context.RefreshToken
+                .Where(t => t.TokenHash == refreshTokenHash)
+                .Select(t => t.Expiracion)
+                .FirstOrDefaultAsync();
+            
+            return Resultado<DateTime?>.Exito(fecha);
+        }
+        catch (System.Exception ex)
+        {
+            return Resultado<DateTime?>.Error("Error en DB", ex);
+        }
+    }
+    public async Task<Resultado<Usuario?>> ObtenerUsuarioId(Guid usuarioId)
+    {
+        try
+        {
+            var resultado = Resultado<Usuario?>.Exito(null);
+            var usuario = await _context.Usuario
+                .Where(u => u.Id == usuarioId)
+                .FirstOrDefaultAsync();
+            
+            if(usuario is null) return resultado;
+            
+            resultado.Valor =  new Usuario(
+                usuario.Id,
+                Rol.ObtenerPorId(usuario.RolId),
+                usuario.Nombre,
+                new Domain.ObjValor.CorreoElectronico(usuario.CorreoElectronico),
+                usuario.CorreoElectronico,
+                usuario.Contrasenia
+            );
+            return resultado;
+        }
+        catch (System.Exception ex)
+        {
+            return Resultado<Usuario?>.Error("Error en BD", ex);
+        }
+    }
+    
 }

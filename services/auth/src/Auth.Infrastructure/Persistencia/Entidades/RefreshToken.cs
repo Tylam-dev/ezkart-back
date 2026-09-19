@@ -16,10 +16,17 @@ public class RefreshToken : EntidadBase
     [Required]
     [Column("expiracion")]
     public DateTime Expiracion { get; set; }
-    public class UsuarioConfiguracion : IEntityTypeConfiguration<Usuario>
+    [Required]
+    [Column("usuario_id")]
+    public Guid UsuarioId {get;set;}
+    public virtual Usuario Usuario { get; set;}
+    public class UsuarioConfiguracion : IEntityTypeConfiguration<RefreshToken>
     {
-        public void Configure(EntityTypeBuilder<Usuario> builder)
+        public void Configure(EntityTypeBuilder<RefreshToken> builder)
         {
+            builder.HasOne(x => x.Usuario)
+                .WithMany(x => x.RefreshToken)
+                .HasForeignKey(x => x.UsuarioId);
         }
     }
 }

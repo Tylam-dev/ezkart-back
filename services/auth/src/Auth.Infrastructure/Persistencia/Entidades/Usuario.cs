@@ -22,15 +22,19 @@ public class Usuario : EntidadBase
     public string Contrasenia { get; set; } = null!;
     [Column("rol_id")]
     public int RolId { get; set; }
-    public Rol Rol { get; set; } = null!;
+    public virtual Rol Rol { get; set; } = null!;
+    public virtual ICollection<RefreshToken> RefreshToken{ get; set; } = null!;
     public class UsuarioConfiguracion : IEntityTypeConfiguration<Usuario>
     {
         public void Configure(EntityTypeBuilder<Usuario> builder)
         {
             builder.HasOne(x => x.Rol)
                 .WithMany(x => x.Usuarios)
-                .HasForeignKey(x => x.RolId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .HasForeignKey(x => x.RolId);
+
+            builder.HasMany(x => x.RefreshToken)
+                .WithOne(x => x.Usuario)
+                .HasForeignKey(x => x.UsuarioId);
         }
     }
 }

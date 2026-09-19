@@ -1,3 +1,5 @@
+using System.Security.Cryptography;
+using System.Text;
 using Auth.Application;
 using Auth.Application.IServicios;
 using Auth.Application.Utilidades;
@@ -22,22 +24,22 @@ public class AutenticacionServicio : IAutenticacionServicio
         
         var usuario = await _repositorioAutenticacion.ObtenerUsuarioLogin(loginDTO.NombreUsuario);
         
-        var token = _jwtTokenServicio.GenerarAccessToken(usuario.Valor);
-        var refresToken = _jwtTokenServicio.GenerarRefreshToken();
-
         if(usuario.Valor == null && usuario.Exitoso) throw new CredencialesInvalidas();
 
         if(!usuario.Exitoso) throw usuario.Excepcion ?? new Exception("Servicio no disponible en este momento");
-        
+
         if (!_contraseniaHasher.VerificarHash(usuario.Valor.Contrasenia, loginDTO.Contrasena)) throw new CredencialesInvalidas();
+
+        var token = _jwtTokenServicio.GenerarAccessToken(usuario.Valor);
+        var refresToken = _jwtTokenServicio.GenerarRefreshToken();
 
         if(!token.Exitoso) throw token.Excepcion ?? new Exception("Servicio no disponible en este momento");
 
         if(!refresToken.Exitoso) throw token.Excepcion ?? new Exception("Servicio no disponible en este momento");
 
-        this.EliminarRefreshTokenCaducados();
+        EliminarRefreshTokenCaducados();
         
-        await _repositorioAutenticacion.GuardarRefresToken(refresToken.Valor);
+        await _repositorioAutenticacion.GuardarRefresToken(refresToken.Valor, usuario.Valor.Id);
 
         var dto = new LoggedDTO()
         {
@@ -59,5 +61,24 @@ public class AutenticacionServicio : IAutenticacionServicio
         var eliminados = await _repositorioAutenticacion.EliminarRefreshTokens(new List<string>(){hashRefreshToken});
         
         return eliminados.Exitoso;
+    }
+    public async Task<TokenAcceso> RefrescarToken(string refreshToken, Guid usuarioId)
+    {
+        var usuario = await _repositorioAutenticacion.ObtenerUsuarioId(usuarioId);
+
+        var refreshTokenHash = Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(refreshToken)));
+
+        var fechaExpiracionToken = await _repositorioAutenticacion.ObtenerFechaCaducidadRefreshToken(refreshTokenHash);
+
+        if((fechaExpiracionToken.Exitoso && fechaExpiracionToken.Valor is null) ||
+            (fechaExpiracionToken.Valor >= DateTime.Now) ||
+            (usuario.Valor is null)) 
+                throw new CredencialesInvalidas();
+        
+        var token = _jwtTokenServicio.GenerarAccessToken(usuario.Valor);
+
+        if(!token.Exitoso) throw token.Excepcion ?? new Exception("Servicio no disponible en este momento");
+
+        return token.Valor; 
     }
 }
