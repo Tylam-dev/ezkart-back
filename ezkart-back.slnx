@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/Gateway/">
+    <Project Path="gateway/Gateway.Api/Gateway.Api.csproj" />
+  </Folder>
+  <Folder Name="/Auth/">
+    <Project Path="services/auth/src/Auth.Api/Auth.Api.csproj" />
+    <Project Path="services/auth/src/Auth.Application/Auth.Application.csproj" />
+    <Project Path="services/auth/src/Auth.Domain/Auth.Domain.csproj" />
+    <Project Path="services/auth/src/Auth.Infrastructure/Auth.Infrastructure.csproj" />
+    <Project Path="services/auth/tests/Auth.UnitTests/Auth.UnitTests.csproj" />
+  </Folder>
+</Solution>
