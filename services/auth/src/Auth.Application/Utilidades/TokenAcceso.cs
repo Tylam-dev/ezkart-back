@@ -1,0 +1,1 @@
+public sealed record TokenAcceso(string Valor, DateTime Expiracion);

@@ -1,5 +1,10 @@
+using Auth.Application.Utilidades;
+using Auth.Domain;
+
+namespace Auth.Application.IServicios;
 public interface IAutenticacionServicio
 {
-    Task<LoginDTO> LoginAsync(LoginDTO loginDTO);
-    Task LogoutAsync(Guid id);
+    Task<LoggedDTO> LoginAsync(LoginDTO loginDTO);
+
+    Task<bool> LogoutAsync(string hashRefreshToken);
 }

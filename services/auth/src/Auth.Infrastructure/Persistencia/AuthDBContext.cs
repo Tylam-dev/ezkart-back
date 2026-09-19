@@ -1,10 +1,11 @@
-using Auth.Domain;
+using Auth.Infrastructure.Persistencia.Entidades;
 using Microsoft.EntityFrameworkCore;
 
 public class AuthDBContext : DbContext
 {
     public DbSet<Usuario> Usuario { get; set; } = null!;
     public DbSet<Rol> Rol { get; set; } = null!;
+    public DbSet<Auth.Infrastructure.Persistencia.Entidades.RefreshToken> RefreshToken { get; set; } = null!;
     public AuthDBContext(DbContextOptions<AuthDBContext> options)
         : base(options)
     {

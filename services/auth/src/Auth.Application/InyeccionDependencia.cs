@@ -1,3 +1,4 @@
+using Auth.Application.IServicios;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 

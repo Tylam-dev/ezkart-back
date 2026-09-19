@@ -21,4 +21,8 @@ public class CorreoElectronico
             return false;
         }
     }
+    public CorreoElectronico(string correo)
+    {
+        Valor = correo;
+    }
 }
