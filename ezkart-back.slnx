@@ -15,4 +15,10 @@
     <Project Path="services/inventario/src/Inventario.Domain/Inventario.Domain.csproj" />
     <Project Path="services/inventario/src/Inventario.Infrastructure/Inventario.Infrastructure.csproj" />
   </Folder>
+  <Folder Name="/Compras/">
+    <Project Path="services/compras/src/Compras.Api/Compras.Api.csproj" />
+    <Project Path="services/compras/src/Compras.Application/Compras.Application.csproj" />
+    <Project Path="services/compras/src/Compras.Domain/Compras.Domain.csproj" />
+    <Project Path="services/compras/src/Compras.Infrastructure/Compras.Infrastructure.csproj" />
+  </Folder>
 </Solution>
