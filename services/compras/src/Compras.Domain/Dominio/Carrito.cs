@@ -8,7 +8,7 @@ public class Carrito
     public Guid UsuarioId {get;set;}
     public List<CarritoItem> Items {get;set;} = new List<CarritoItem>();
 
-    public int CantidadDe(Guid productoId) =>
+    public int ObtenerCantidadProducto(Guid productoId) =>
         Items.FirstOrDefault(i => i.ProductoId == productoId)?.Cantidad ?? 0;
 
     public void AgregarProducto(Guid productoId, string codigo, int cantidad)
