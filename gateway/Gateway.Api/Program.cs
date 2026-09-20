@@ -1,4 +1,5 @@
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +27,16 @@ builder.Services.AddAuthentication()
             ValidIssuer = jwtIssuer,
             ValidAudience = jwtAudience,
             ClockSkew = TimeSpan.FromSeconds(clockSkew)
+        };
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                if (context.Request.Cookies.TryGetValue("access_token_ezkart", out var token))
+                    context.Token = token;
+
+                return Task.CompletedTask;
+            }
         };
     });
 
