@@ -71,7 +71,7 @@ public class AutenticacionServicio : IAutenticacionServicio
         
         return eliminados.Exitoso;
     }
-    public async Task<TokenAcceso> RefrescarToken(string refreshToken)
+    public async Task<LoggedDTO> RefrescarToken(string refreshToken)
     {
         var refreshTokenHash = Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(refreshToken)));
 
@@ -94,10 +94,33 @@ public class AutenticacionServicio : IAutenticacionServicio
         if(usuario.Valor is null) throw new CredencialesInvalidas();
 
         var token = _jwtTokenServicio.GenerarAccessToken(usuario.Valor);
+        var nuevoRefreshToken = _jwtTokenServicio.GenerarRefreshToken();
 
         if(!token.Exitoso) throw token.Excepcion ?? new Exception("Servicio no disponible en este momento");
 
-        return token.Valor;
+        if(!nuevoRefreshToken.Exitoso) throw nuevoRefreshToken.Excepcion ?? new Exception("Servicio no disponible en este momento");
+
+        var refreshTokenAnterior = new RefreshToken(refreshToken, refreshTokenHash, fechaExpiracionToken.Valor.Value);
+
+        var actualizado = await _repositorioAutenticacion.ActualizarToken(refreshTokenAnterior, nuevoRefreshToken.Valor);
+
+        if(!actualizado.Exitoso) throw actualizado.Excepcion ?? new Exception("Servicio no disponible en este momento");
+
+        var usuarioDTO = new UsuarioDTO()
+        {
+            Nombre = usuario.Valor.Nombre,
+            NombreUsuario = usuario.Valor.NombreUsuario,
+            CorreoElectronico = usuario.Valor.CorreoElectronico.Valor,
+            Rol = usuario.Valor.Rol.Nombre
+        };
+
+        var dto = new LoggedDTO()
+        {
+            token = token.Valor,
+            refreshToken = nuevoRefreshToken.Valor,
+            Usuario = usuarioDTO
+        };
+        return dto;
     }
     public async Task<UsuarioDTO> ObtenerUsuarioSesion(Guid usuarioId)
     {

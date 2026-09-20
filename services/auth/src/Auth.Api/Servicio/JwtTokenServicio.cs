@@ -12,14 +12,16 @@ namespace Auth.Api.Servicio;
 public class JwtTokenServicio : IJwtTokenServicio
 {
     private readonly string _key;
-    private readonly double _expiracionHoras;
+    private readonly double _expiracionMinutos;
+    private readonly double _expiracionRefreshDias;
     private readonly string _issuer = "auth-api-service";
     private readonly string _audience = "ezkart-back-gateway";
 
-    public JwtTokenServicio(string key, double expiracionHoras)
+    public JwtTokenServicio(string key, double expiracionMinutos, double expiracionRefreshDias)
     {
         _key = key;
-        _expiracionHoras = expiracionHoras;
+        _expiracionMinutos = expiracionMinutos;
+        _expiracionRefreshDias = expiracionRefreshDias;
     }
 
     public Resultado<TokenAcceso> GenerarAccessToken(Usuario usuario)
@@ -33,7 +35,7 @@ public class JwtTokenServicio : IJwtTokenServicio
                 new Claim(ClaimTypes.NameIdentifier, usuario.Id.ToString()),
                 new Claim(ClaimTypes.Role, usuario.Rol.Nombre)
             }),
-            Expires = DateTime.UtcNow.AddMinutes(_expiracionHoras),
+            Expires = DateTime.UtcNow.AddMinutes(_expiracionMinutos),
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_key)), SecurityAlgorithms.HmacSha256Signature),
             Issuer = _issuer,
             Audience = _audience
@@ -51,7 +53,7 @@ public class JwtTokenServicio : IJwtTokenServicio
             numeroRandom.GetBytes(byteNumeroRandom);
             var refreshTokenValue = Convert.ToBase64String(byteNumeroRandom);
             var refreshTokenHash = Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(refreshTokenValue)));
-            var refreshToken = new RefreshToken(refreshTokenValue, refreshTokenHash, DateTime.UtcNow.AddDays(_expiracionHoras));
+            var refreshToken = new RefreshToken(refreshTokenValue, refreshTokenHash, DateTime.UtcNow.AddDays(_expiracionRefreshDias));
             return Resultado<RefreshToken>.Exito(refreshToken);
         }
     }

@@ -68,10 +68,14 @@ public class RepositorioAutenticacion : IRepositorioAutenticacion
         try
         {
             var tokenAnterior = await _context.RefreshToken
-                .FirstAsync(t => t.TokenHash ==  refreshTokenAnterior.TokenHash);
+                .FirstOrDefaultAsync(t => t.TokenHash ==  refreshTokenAnterior.TokenHash);
+
+            if(tokenAnterior is null)
+                return Resultado<RefreshToken>.Error("Refresh token no encontrado", new CredencialesInvalidas());
 
             tokenAnterior.TokenHash = refreshTokenNuevo.TokenHash;
             tokenAnterior.Expiracion = refreshTokenNuevo.Expiracion;
+            tokenAnterior.FechaActualizacion = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
 

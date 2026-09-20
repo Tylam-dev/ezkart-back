@@ -19,9 +19,10 @@ var jwtKey = builder.Configuration["Jwt:Key"]
     ?? throw new InvalidOperationException("Falta Jwt:Key");
 
 var minutos = builder.Configuration.GetValue("Jwt:AccessTokenMinutos", 15.0);
+var diasRefresh = builder.Configuration.GetValue("Jwt:RefreshTokenDias", 7.0);
 
 builder.Services.AddSingleton<IJwtTokenServicio>(
-    _ => new JwtTokenServicio(jwtKey, minutos));
+    _ => new JwtTokenServicio(jwtKey, minutos, diasRefresh));
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>

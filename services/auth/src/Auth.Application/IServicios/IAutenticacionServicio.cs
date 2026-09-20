@@ -5,7 +5,7 @@ public interface IAutenticacionServicio
 
     Task<bool> LogoutAsync(string hashRefreshToken);
 
-    Task<TokenAcceso> RefrescarToken(string refreshToken);
+    Task<LoggedDTO> RefrescarToken(string refreshToken);
 
     Task<UsuarioDTO> ObtenerUsuarioSesion(Guid usuarioId);
 }

@@ -90,22 +90,14 @@ public class AutenticacionController : ControllerBase
     [HttpGet("refresh")]
     public async Task<IActionResult> RefrescarToken()
     {
+        LoggedDTO nuevaSession;
         try
         {
             var refreshToken = Request.Cookies[keyRefreshToken];
             if (refreshToken is null)
                 return Unauthorized();
 
-            var nuevaSession = await _autenticacionServicio.RefrescarToken(refreshToken);
-
-            Response.Cookies.Append(keyAccessToken, nuevaSession.Valor, new CookieOptions
-            {
-               HttpOnly = true,
-               Secure = true,
-               SameSite = SameSiteMode.Lax,
-               Expires = nuevaSession.Expiracion,
-               Path = "/"
-            });
+            nuevaSession = await _autenticacionServicio.RefrescarToken(refreshToken);
         }
         catch (CredencialesInvalidas ex)
         {
@@ -118,9 +110,27 @@ public class AutenticacionController : ControllerBase
             return StatusCode(500, new { Message = "Servicio no disponible" });
         }
 
+        Response.Cookies.Append(keyAccessToken, nuevaSession.token.Valor, new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.Lax,
+            Expires = nuevaSession.token.Expiracion,
+            Path = "/"
+        });
+
+        Response.Cookies.Append(keyRefreshToken, nuevaSession.refreshToken.Token, new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.Lax,
+            Expires = nuevaSession.refreshToken.Expiracion,
+            Path = "/auth/refresh"
+        });
+
         _logger.LogInformation("Jwt Renovado");
 
-        return Ok();
+        return Ok(nuevaSession.Usuario);
     }
     [Authorize]
     [HttpPost("logout")]
