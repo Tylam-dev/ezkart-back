@@ -19,7 +19,7 @@ public class Orden : EntidadBase
     public EstadoOrdenEnum EstadoOrden { get; set; }
     [Required]
     [Column("total")]
-    [Precision(13,4)]
+    [Precision(11,2)]
     public decimal Total { get; set; }
     [Column("descuento_temporada")]
     public Guid? DescuentoTemporadaId { get; set; }
