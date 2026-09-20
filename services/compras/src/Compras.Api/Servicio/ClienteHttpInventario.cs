@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 using Compras.Application.DTOs;
 using Compras.Application.Exepciones;
 using Compras.Application.Utilidades;
+using Compras.Domain.Exepcion;
 
 namespace Compras.Api.Servicio;
 
@@ -39,5 +40,52 @@ public class ClienteHttpInventario : IClienteHttpInventario
         {
             return Resultado<ProductoInventarioDTO>.Error("Inventario no disponible", new ExepcionInventarioNoDisponible(ex));
         }
+    }
+
+    public async Task<Resultado<bool>> DisminuirInventario(DisminuirInventarioDTO disminuirInventarioDTO)
+    {
+        try
+        {
+            var respuesta = await _httpClient.PostAsJsonAsync("products/disminuir", disminuirInventarioDTO);
+
+            if (respuesta.IsSuccessStatusCode) return Resultado<bool>.Exito(true);
+
+            var mensaje = await ObtenerMensajeError(respuesta);
+
+            switch (respuesta.StatusCode)
+            {
+                case HttpStatusCode.BadRequest:
+                    return Resultado<bool>.Error(mensaje, new ExepcionDominio(mensaje));
+                case HttpStatusCode.NotFound:
+                    return Resultado<bool>.Error(mensaje, new ExepcionArticuloNoEncontrado());
+                case HttpStatusCode.Conflict:
+                    return Resultado<bool>.Error(mensaje, new ExepcionStockInsuficiente(mensaje));
+                default:
+                    return Resultado<bool>.Error("Inventario no disponible", new ExepcionInventarioNoDisponible());
+            }
+        }
+        catch (System.Exception ex)
+        {
+            return Resultado<bool>.Error("Inventario no disponible", new ExepcionInventarioNoDisponible(ex));
+        }
+    }
+
+    private static async Task<string> ObtenerMensajeError(HttpResponseMessage respuesta)
+    {
+        try
+        {
+            var error = await respuesta.Content.ReadFromJsonAsync<ErrorInventario>();
+
+            return error?.Message ?? "Error en inventario";
+        }
+        catch (System.Exception)
+        {
+            return "Error en inventario";
+        }
+    }
+
+    private class ErrorInventario
+    {
+        public string? Message { get; set; }
     }
 }
