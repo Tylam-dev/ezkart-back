@@ -1,3 +1,4 @@
+using Compras.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
@@ -40,6 +41,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             }
         };
     });
+
+builder.Services.AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
 
