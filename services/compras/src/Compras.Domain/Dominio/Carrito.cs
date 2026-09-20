@@ -11,7 +11,7 @@ public class Carrito
     public int ObtenerCantidadProducto(Guid productoId) =>
         Items.FirstOrDefault(i => i.ProductoId == productoId)?.Cantidad ?? 0;
 
-    public void AgregarProducto(Guid productoId, string codigo, int cantidad)
+    public void AgregarProducto(Guid productoId, string codigo, string nombre, int cantidad)
     {
         if (cantidad <= 0)
             throw new ExepcionDominio("La cantidad debe ser mayor que cero.");
@@ -19,9 +19,12 @@ public class Carrito
         var item = Items.FirstOrDefault(i => i.ProductoId == productoId);
 
         if (item is null)
-            Items.Add(new CarritoItem() { ProductoId = productoId, Codigo = codigo, Cantidad = cantidad });
+            Items.Add(new CarritoItem() { ProductoId = productoId, Codigo = codigo, Nombre = nombre, Cantidad = cantidad });
         else
+        {
             item.Cantidad += cantidad;
+            item.Nombre = nombre;
+        }
     }
 
     public void ActualizarCantidad(Guid productoId, int cantidad)

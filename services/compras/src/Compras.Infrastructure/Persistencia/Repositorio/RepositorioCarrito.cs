@@ -39,6 +39,7 @@ internal class RepositorioCarrito : IRepositorioCarrito
             {
                 ProductoId = item.ProductoId,
                 Codigo = item.CodigoProducto,
+                Nombre = item.NombreProducto,
                 Cantidad = item.Cantidad
             });
             resultado.Valor = carritoMapeado;
@@ -81,11 +82,13 @@ internal class RepositorioCarrito : IRepositorioCarrito
                         CarritoId = entidad.Id,
                         ProductoId = item.ProductoId,
                         CodigoProducto = item.Codigo,
+                        NombreProducto = item.Nombre,
                         Cantidad = item.Cantidad
                     });
                 }
                 else
                 {
+                    itemActual.NombreProducto = item.Nombre;
                     itemActual.Cantidad = item.Cantidad;
                     itemActual.FechaActualizacion = DateTime.UtcNow;
                 }

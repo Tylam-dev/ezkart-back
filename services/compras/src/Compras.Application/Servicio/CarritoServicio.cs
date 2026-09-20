@@ -62,6 +62,7 @@ public class CarritoServicio : ICarritoServicio
         carrito.AgregarProducto(
             agregarProductoCarritoDTO.ProductoId,
             agregarProductoCarritoDTO.Codigo,
+            articulo.Valor.Nombre,
             agregarProductoCarritoDTO.Cantidad
         );
 
@@ -130,6 +131,7 @@ public class CarritoServicio : ICarritoServicio
         {
             ProductoId = item.ProductoId,
             Codigo = item.Codigo,
+            Nombre = item.Nombre,
             Cantidad = item.Cantidad,
             Agotado = item.Agotado
         });

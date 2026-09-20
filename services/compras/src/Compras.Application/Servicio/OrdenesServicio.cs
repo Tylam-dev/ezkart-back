@@ -40,7 +40,7 @@ public class OrdenesServicio : IOrdenesServicio
             ordenBuilder.AgregarProducto(
                 item.ProductoId,
                 item.Codigo,
-                articulo.Valor.Nombre,
+                item.Nombre,
                 articulo.Valor.Precio,
                 item.Cantidad
             );

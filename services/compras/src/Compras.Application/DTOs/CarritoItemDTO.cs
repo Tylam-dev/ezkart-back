@@ -8,6 +8,7 @@ public class CarritoItemDTO
     public Guid ProductoId { get; set; }
     [Required]
     public string Codigo { get; set; } = null!;
+    public string Nombre { get; set; } = null!;
     [Required]
     public int Cantidad { get; set; }
     public bool Agotado { get; set; }
