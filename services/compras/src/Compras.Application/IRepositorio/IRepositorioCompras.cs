@@ -11,6 +11,7 @@ public interface IRepositorioCompras
         PaginacionQuery<OrdenesQuery> queryOrdenes
     );
     Task<Resultado<Orden?>> ObtenerOrdenPorId(Guid usuarioId, Guid ordenId);
+    Task<Resultado<bool>> GuardarOrden(Orden orden);
     Task<Resultado<List<DescuentoTemporada>>> ObtenerDescuentosVigentes(DateTime fecha);
     Task<Resultado<DescuentoTemporada?>> ObtenerDescuentoPorId(Guid descuentoId);
 }
