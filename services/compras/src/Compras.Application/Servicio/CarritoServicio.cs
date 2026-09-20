@@ -98,7 +98,7 @@ public class CarritoServicio : ICarritoServicio
 
         carrito.EliminarProducto(productoId);
 
-        await GuardarCarrito(carrito);
+        await EliminarProductoCarrito(carrito.Id, productoId);
 
         return true;
     }
@@ -115,6 +115,12 @@ public class CarritoServicio : ICarritoServicio
         var guardado = await _repositorioCarrito.GuardarCarrito(carrito);
 
         if(!guardado.Exitoso) throw guardado.Excepcion!;
+    }
+    private async Task EliminarProductoCarrito(Guid carritoId, Guid productoId)
+    {
+        var eliminado = await _repositorioCarrito.EliminarProductoCarrito(carritoId, productoId);
+
+        if(!eliminado.Exitoso) throw eliminado.Excepcion!;
     }
     private static CarritoDTO MapearCarritoADTO(Carrito carrito)
     {

@@ -18,6 +18,9 @@ public class CarritoItem : EntidadBase
     [Column("producto_id")]
     public Guid ProductoId { get; set; }
     [Required]
+    [Column("codigo_producto")]
+    public string CodigoProducto { get; set; } = null!;
+    [Required]
     [Column("cantidad")]
     public int Cantidad { get; set; }
     public class CarritoItemConfiguracion : EntidadBaseConfiguration<CarritoItem>
