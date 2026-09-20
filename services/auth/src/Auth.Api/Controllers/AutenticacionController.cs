@@ -87,20 +87,17 @@ public class AutenticacionController : ControllerBase
             return StatusCode(500, new { Message = "Servicio no disponible" });
         }
     }
-    [Authorize]
     [HttpGet("refresh")]
     public async Task<IActionResult> RefrescarToken()
     {
         try
         {
             var refreshToken = Request.Cookies[keyRefreshToken];
-            var usuarioId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (usuarioId is null || !Guid.TryParse(usuarioId, out var usuarioGuid) || refreshToken is null)
+            if (refreshToken is null)
                 return Unauthorized();
 
-            var hashRefreshToken = Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(refreshToken)));
-            var nuevaSession = await _autenticacionServicio.RefrescarToken(hashRefreshToken, Guid.Parse(usuarioId));
-            
+            var nuevaSession = await _autenticacionServicio.RefrescarToken(refreshToken);
+
             Response.Cookies.Append(keyAccessToken, nuevaSession.Valor, new CookieOptions
             {
                HttpOnly = true,

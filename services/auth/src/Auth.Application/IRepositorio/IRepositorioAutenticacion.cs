@@ -13,4 +13,5 @@ public interface IRepositorioAutenticacion
     Task<Resultado<List<string>>>ObtenerHashRefreshTokensCaducados(DateTime fechaLimite);
     Task<Resultado<bool>>EliminarRefreshTokens(List<string>refreshTokenHashes);
     Task<Resultado<DateTime?>>ObtenerFechaCaducidadRefreshToken(string refreshTokenHash);
+    Task<Resultado<Guid?>>ObtenerUsuarioIdRefreshToken(string refreshTokenHash);
 }

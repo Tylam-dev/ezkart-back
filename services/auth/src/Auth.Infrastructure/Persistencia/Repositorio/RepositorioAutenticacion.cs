@@ -143,14 +143,30 @@ public class RepositorioAutenticacion : IRepositorioAutenticacion
         {
             var fecha = await _context.RefreshToken
                 .Where(t => t.TokenHash == refreshTokenHash)
-                .Select(t => t.Expiracion)
+                .Select(t => (DateTime?)t.Expiracion)
                 .FirstOrDefaultAsync();
-            
+
             return Resultado<DateTime?>.Exito(fecha);
         }
         catch (System.Exception ex)
         {
             return Resultado<DateTime?>.Error("Error en DB", ex);
+        }
+    }
+    public async Task<Resultado<Guid?>>ObtenerUsuarioIdRefreshToken(string refreshTokenHash)
+    {
+        try
+        {
+            var usuarioId = await _context.RefreshToken
+                .Where(t => t.TokenHash == refreshTokenHash)
+                .Select(t => (Guid?)t.UsuarioId)
+                .FirstOrDefaultAsync();
+
+            return Resultado<Guid?>.Exito(usuarioId);
+        }
+        catch (System.Exception ex)
+        {
+            return Resultado<Guid?>.Error("Error en DB", ex);
         }
     }
     public async Task<Resultado<Usuario?>> ObtenerUsuarioId(Guid usuarioId)

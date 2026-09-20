@@ -71,19 +71,28 @@ public class AutenticacionServicio : IAutenticacionServicio
         
         return eliminados.Exitoso;
     }
-    public async Task<TokenAcceso> RefrescarToken(string refreshToken, Guid usuarioId)
+    public async Task<TokenAcceso> RefrescarToken(string refreshToken)
     {
-        var usuario = await _repositorioAutenticacion.ObtenerUsuarioId(usuarioId);
-
         var refreshTokenHash = Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(refreshToken)));
 
         var fechaExpiracionToken = await _repositorioAutenticacion.ObtenerFechaCaducidadRefreshToken(refreshTokenHash);
 
-        if((fechaExpiracionToken.Exitoso && fechaExpiracionToken.Valor is null) ||
-            (fechaExpiracionToken.Valor >= DateTime.Now) ||
-            (usuario.Valor is null)) 
-                throw new CredencialesInvalidas();
-        
+        if(!fechaExpiracionToken.Exitoso) throw fechaExpiracionToken.Excepcion ?? new Exception("Servicio no disponible en este momento");
+
+        if(fechaExpiracionToken.Valor is null || fechaExpiracionToken.Valor <= DateTime.UtcNow) throw new CredencialesInvalidas();
+
+        var usuarioId = await _repositorioAutenticacion.ObtenerUsuarioIdRefreshToken(refreshTokenHash);
+
+        if(!usuarioId.Exitoso) throw usuarioId.Excepcion ?? new Exception("Servicio no disponible en este momento");
+
+        if(usuarioId.Valor is null) throw new CredencialesInvalidas();
+
+        var usuario = await _repositorioAutenticacion.ObtenerUsuarioId(usuarioId.Valor.Value);
+
+        if(!usuario.Exitoso) throw usuario.Excepcion ?? new Exception("Servicio no disponible en este momento");
+
+        if(usuario.Valor is null) throw new CredencialesInvalidas();
+
         var token = _jwtTokenServicio.GenerarAccessToken(usuario.Valor);
 
         if(!token.Exitoso) throw token.Excepcion ?? new Exception("Servicio no disponible en este momento");
