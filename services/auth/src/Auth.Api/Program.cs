@@ -16,12 +16,14 @@ var minutos = builder.Configuration.GetValue("Jwt:AccessTokenMinutos", 15.0);
 
 builder.Services.AddSingleton<IJwtTokenServicio>(
     _ => new JwtTokenServicio(jwtKey, minutos));
-    
+
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddControllers();
 
 var app = builder.Build();
+
+await app.Services.InicializarBaseDatosAsync();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

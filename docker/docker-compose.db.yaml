@@ -1,0 +1,27 @@
+name: ezkart
+
+services:
+  auth-db:
+    image: postgres:17
+    container_name: ezkart-auth-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: auth_db
+      POSTGRES_USER: ${AUTH_DB_USER}
+      POSTGRES_PASSWORD: ${AUTH_DB_PASSWORD}
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - auth-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${AUTH_DB_USER} -d auth_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks: [ezkart-net]
+
+networks:
+  ezkart-net:
+
+volumes:
+  auth-db-data:

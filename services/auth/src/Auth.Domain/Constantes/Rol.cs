@@ -1,3 +1,4 @@
+namespace Auth.Domain.Constantes;
 public class Rol
 {
     public int Id { get; }
@@ -21,4 +22,5 @@ public class Rol
 
         return diccionario[id];
     }
+    public static IReadOnlyList<Rol> Todos { get; } = new[] { Administrador, Cliente };
 }

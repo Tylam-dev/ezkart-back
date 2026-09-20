@@ -8,4 +8,8 @@ public class ContraseniaHasher : IContraseniaHasher
     {
         return BCrypt.Net.BCrypt.Verify(contrasenia, contraseniaHasheada);
     }
+    public string GenerarHash(string contrasenia)
+    {
+        return BCrypt.Net.BCrypt.HashPassword(contrasenia);
+    }
 }

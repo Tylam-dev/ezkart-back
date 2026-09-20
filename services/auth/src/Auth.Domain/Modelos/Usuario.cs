@@ -1,5 +1,5 @@
 ﻿using Auth.Domain.ObjValor;
-
+using Auth.Domain.Constantes;
 namespace Auth.Domain;
 
 public class Usuario

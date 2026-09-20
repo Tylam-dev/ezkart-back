@@ -50,7 +50,7 @@ public class AutenticacionServicio : IAutenticacionServicio
     }
     private async void EliminarRefreshTokenCaducados()
     {
-        var momentoActual = DateTime.Now;
+        var momentoActual = DateTime.UtcNow;
         var hashesTokenCaducados = await _repositorioAutenticacion.ObtenerHashRefreshTokensCaducados(momentoActual);
 
         if(hashesTokenCaducados.Valor is not null && hashesTokenCaducados.Valor.Count() > 0) 
