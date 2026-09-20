@@ -1,5 +1,7 @@
 using System.Security.Claims;
 using Compras.Application.DTOs;
+using Compras.Application.Exepciones;
+using Compras.Domain.Exepcion;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,11 +13,14 @@ namespace Compras.Api.Controllers;
 public class CarritoController : ControllerBase
 {
     private readonly ILogger<CarritoController> _logger;
+    private readonly ICarritoServicio _carritoServicio;
     public CarritoController(
-        ILogger<CarritoController> logger
+        ILogger<CarritoController> logger,
+        ICarritoServicio carritoServicio
     )
     {
         _logger = logger;
+        _carritoServicio = carritoServicio;
     }
     [HttpGet]
     public async Task<IActionResult> ObtenerCarrito()
@@ -24,7 +29,16 @@ public class CarritoController : ControllerBase
         {
             if (!ObtenerUsuarioId(out var usuarioId)) return Unauthorized();
 
-            return Ok();
+            var carrito = await _carritoServicio.ObtenerCarrito(usuarioId);
+
+            _logger.LogInformation("Carrito entregado");
+
+            return Ok(carrito);
+        }
+        catch (ExepcionInventarioNoDisponible ex)
+        {
+            _logger.LogError(ex, ex.Message);
+            return StatusCode(503, new { Message = ex.Message });
         }
         catch (System.Exception ex)
         {
@@ -39,7 +53,31 @@ public class CarritoController : ControllerBase
         {
             if (!ObtenerUsuarioId(out var usuarioId)) return Unauthorized();
 
-            return Ok();
+            var carrito = await _carritoServicio.AgregarProducto(usuarioId, agregarProductoCarritoDTO);
+
+            _logger.LogInformation("Producto agregado al carrito");
+
+            return Ok(carrito);
+        }
+        catch (ExepcionDominio ex)
+        {
+            _logger.LogWarning(ex.Message);
+            return BadRequest(new { Message = ex.Message });
+        }
+        catch (ExepcionArticuloNoEncontrado ex)
+        {
+            _logger.LogWarning(ex.Message);
+            return NotFound(new { Message = ex.Message });
+        }
+        catch (ExepcionStockInsuficiente ex)
+        {
+            _logger.LogWarning(ex.Message);
+            return Conflict(new { Message = ex.Message });
+        }
+        catch (ExepcionInventarioNoDisponible ex)
+        {
+            _logger.LogError(ex, ex.Message);
+            return StatusCode(503, new { Message = ex.Message });
         }
         catch (System.Exception ex)
         {
@@ -56,7 +94,36 @@ public class CarritoController : ControllerBase
         {
             if (!ObtenerUsuarioId(out var usuarioId)) return Unauthorized();
 
-            return Ok();
+            var carrito = await _carritoServicio.ActualizarCantidadProducto(usuarioId, productId, actualizarCantidadCarritoDTO);
+
+            _logger.LogInformation("Cantidad del carrito actualizada");
+
+            return Ok(carrito);
+        }
+        catch (ExepcionDominio ex)
+        {
+            _logger.LogWarning(ex.Message);
+            return BadRequest(new { Message = ex.Message });
+        }
+        catch (ExepcionProductoNoEnCarrito ex)
+        {
+            _logger.LogWarning(ex.Message);
+            return NotFound(new { Message = ex.Message });
+        }
+        catch (ExepcionArticuloNoEncontrado ex)
+        {
+            _logger.LogWarning(ex.Message);
+            return NotFound(new { Message = ex.Message });
+        }
+        catch (ExepcionStockInsuficiente ex)
+        {
+            _logger.LogWarning(ex.Message);
+            return Conflict(new { Message = ex.Message });
+        }
+        catch (ExepcionInventarioNoDisponible ex)
+        {
+            _logger.LogError(ex, ex.Message);
+            return StatusCode(503, new { Message = ex.Message });
         }
         catch (System.Exception ex)
         {
@@ -71,7 +138,16 @@ public class CarritoController : ControllerBase
         {
             if (!ObtenerUsuarioId(out var usuarioId)) return Unauthorized();
 
+            await _carritoServicio.EliminarProducto(usuarioId, productId);
+
+            _logger.LogInformation("Producto eliminado del carrito");
+
             return NoContent();
+        }
+        catch (ExepcionProductoNoEnCarrito ex)
+        {
+            _logger.LogWarning(ex.Message);
+            return NotFound(new { Message = ex.Message });
         }
         catch (System.Exception ex)
         {
