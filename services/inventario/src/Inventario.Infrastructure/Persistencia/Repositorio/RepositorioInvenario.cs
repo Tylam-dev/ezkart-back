@@ -42,6 +42,7 @@ internal class RepositorioInvenario : IRepositorioInventario
                 Codigo = producto.Codigo,
                 Nombre = producto.Nombre,
                 Precio = producto.Precio,
+                Existencia = producto.Existencia,
                 Version = producto.Version
             });
 
@@ -80,6 +81,7 @@ internal class RepositorioInvenario : IRepositorioInventario
                 Codigo = producto.Codigo,
                 Nombre = producto.Nombre,
                 Precio = producto.Precio,
+                Existencia = producto.Existencia,
                 Version = producto.Version
             };
             resultado.Valor = productoMapeado;
@@ -98,10 +100,11 @@ internal class RepositorioInvenario : IRepositorioInventario
             var resultado = Resultado<List<Producto>>.Exito(new List<Producto>());
 
             var productos = await _context.Producto
+                .AsNoTracking()
                 .Where(p => productoIds.Contains(p.Id) &&
                             p.Estado == Domain.Enums.EstadoEnum.Activo)
                 .ToListAsync();
-            
+
             foreach(var producto in productos)
             {
                 var productoMapeado = new Producto()
@@ -110,6 +113,7 @@ internal class RepositorioInvenario : IRepositorioInventario
                     Codigo = producto.Codigo,
                     Nombre = producto.Nombre,
                     Precio = producto.Precio,
+                    Existencia = producto.Existencia,
                     Version = producto.Version
                 };
                 resultado.Valor.Add(productoMapeado);
@@ -121,4 +125,30 @@ internal class RepositorioInvenario : IRepositorioInventario
             return Resultado<List<Producto>>.Error("Error en DB", ex);
         }
     }
-} 
+    public async Task<Resultado<bool>> ActualizarExistencias(List<Producto> productos)
+    {
+        try
+        {
+            var productoIds = productos.Select(p => p.Id).ToList();
+
+            var entidades = await _context.Producto
+                .Where(p => productoIds.Contains(p.Id))
+                .ToDictionaryAsync(p => p.Id);
+
+            foreach(var producto in productos)
+            {
+                var entidad = entidades[producto.Id];
+
+                entidad.Existencia = producto.Existencia;
+                entidad.FechaActualizacion = DateTime.UtcNow;
+
+                _context.Entry(entidad).Property(p => p.Version).OriginalValue = producto.Version;
+            }
+            return Resultado<bool>.Exito(true);
+        }
+        catch (System.Exception ex)
+        {
+            return Resultado<bool>.Error("Error en DB", ex);
+        }
+    }
+}

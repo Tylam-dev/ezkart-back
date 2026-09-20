@@ -11,4 +11,5 @@ public interface IRepositorioInventario
     );
     Task<Resultado<Producto?>> ObtenerProductoPorId(Guid productoId);
     Task<Resultado<List<Producto>>> ObtenerListaProductoPorId(List<Guid> productoIds);
+    Task<Resultado<bool>> ActualizarExistencias(List<Producto> productos);
 }
