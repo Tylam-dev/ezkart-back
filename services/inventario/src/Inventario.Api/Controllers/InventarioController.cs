@@ -1,5 +1,5 @@
-using Inventario.Application.Utilidades;
 using Inventario.Application.Utilidades.Queries;
+using Invetario.Appliccation.IServcio;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Inventario.Api.Controllers;
@@ -9,11 +9,14 @@ namespace Inventario.Api.Controllers;
 public class InventarioController : ControllerBase
 {
     private readonly ILogger<InventarioController> _logger;
-
+    private readonly IInvetarioServicio _inventarioServicio;
     public InventarioController(
-        ILogger<InventarioController> logger)
+        ILogger<InventarioController> logger,
+        IInvetarioServicio invetarioServicio
+    )
     {
         _logger = logger;
+        _inventarioServicio = invetarioServicio;
     }
     [HttpGet]
     public async Task<IActionResult> ObtenerProductos(
@@ -22,12 +25,15 @@ public class InventarioController : ControllerBase
     {
         try
         {
-            
+            var listaProductos = await _inventarioServicio.ObtenerProductosFiltradosPaginado(queryPaginada);
+
+            _logger.LogInformation("Productos entregados");
+
+            return Ok(listaProductos);
         }
         catch (System.Exception)
         {
-            
-            throw;
+            // return Err
         }
     }
     [HttpGet("{id:Guid}")]
