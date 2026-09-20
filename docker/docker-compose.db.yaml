@@ -20,8 +20,28 @@ services:
       retries: 5
     networks: [ezkart-net]
 
+  invt-db:
+    image: postgres:17
+    container_name: ezkart-invt-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: invt_db
+      POSTGRES_USER: ${INVENTARIO_DB_USER}
+      POSTGRES_PASSWORD: ${INVENTARIO_DB_PASSWORD}
+    ports:
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - invt-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${INVENTARIO_DB_USER} -d invt_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks: [ezkart-net]
+
 networks:
   ezkart-net:
 
 volumes:
   auth-db-data:
+  invt-db-data:
