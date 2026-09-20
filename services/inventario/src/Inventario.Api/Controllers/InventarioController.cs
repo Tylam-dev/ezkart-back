@@ -3,10 +3,12 @@ using Inventario.Application.Exepciones;
 using Inventario.Application.Utilidades.Queries;
 using Inventario.Domain.Exepcion;
 using Invetario.Appliccation.IServcio;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Inventario.Api.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("products")]
 public class InventarioController : ControllerBase
