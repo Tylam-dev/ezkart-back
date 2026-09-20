@@ -1,4 +1,7 @@
+using Inventario.Application.DTOs;
+using Inventario.Application.Exepciones;
 using Inventario.Application.Utilidades.Queries;
+using Inventario.Domain.Exepcion;
 using Invetario.Appliccation.IServcio;
 using Microsoft.AspNetCore.Mvc;
 
@@ -31,22 +34,66 @@ public class InventarioController : ControllerBase
 
             return Ok(listaProductos);
         }
-        catch (System.Exception)
+        catch (System.Exception ex)
         {
-            // return Err
+            _logger.LogError(ex, "Error Inesperado");
+            return StatusCode(500, new { Message = "Servicio no disponible" });
         }
     }
     [HttpGet("{id:Guid}")]
-    public async Task<IActionResult> ObtenerUnicoProducto([FromQuery] Guid id)
+    public async Task<IActionResult> ObtenerUnicoProducto([FromRoute] Guid id)
     {
         try
         {
-            
+            var producto = await _inventarioServicio.ObtenerProductoPorId(id);
+
+            if (producto is null) return NotFound(new { Message = "Producto no encontrado" });
+
+            _logger.LogInformation("Producto entregado");
+
+            return Ok(producto);
         }
-        catch (System.Exception)
+        catch (System.Exception ex)
         {
-            
-            throw;
+            _logger.LogError(ex, "Error Inesperado");
+            return StatusCode(500, new { Message = "Servicio no disponible" });
+        }
+    }
+    [HttpPost("disminuir")]
+    public async Task<IActionResult> DisminuirInventario([FromBody] DisminuirInventarioDTO disminuirInventarioDTO)
+    {
+        try
+        {
+            await _inventarioServicio.DisminuirInventario(disminuirInventarioDTO);
+
+            _logger.LogInformation("Inventario disminuido");
+
+            return Ok();
+        }
+        catch (ExepcionDominio ex)
+        {
+            _logger.LogWarning(ex.Message);
+            return BadRequest(new { Message = ex.Message });
+        }
+        catch (ExepcionProductoNoEncontrado ex)
+        {
+            _logger.LogWarning(ex.Message);
+            return NotFound(new { Message = ex.Message });
+        }
+        catch (ExepcionStockInsuficiente ex)
+        {
+            _logger.LogWarning(ex.Message);
+            return Conflict(new { Message = ex.Message });
+        }
+        catch (ExepcionConcurrencia ex)
+        {
+            _logger.LogWarning(ex.Message);
+            return Conflict(new { Message = ex.Message });
+        }
+        catch (System.Exception ex)
+        {
+            _logger.LogError(ex, "Error Inesperado");
+            return StatusCode(500, new { Message = "Servicio no disponible" });
         }
     }
 }

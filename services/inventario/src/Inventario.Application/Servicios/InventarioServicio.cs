@@ -11,7 +11,6 @@ namespace Invetario.Appliccation.Servcio;
 
 public class InvetarioServicio : IInvetarioServicio
 {
-    private const int MaximoIntentos = 3;
     private readonly IRepositorioInventario _repositorioInventario;
     private readonly IUnidadTrabajo _unidadTrabajo;
     public InvetarioServicio(
@@ -34,6 +33,8 @@ public class InvetarioServicio : IInvetarioServicio
     }
     public async Task<bool> DisminuirInventario(DisminuirInventarioDTO disminuirInventarioDTO)
     {
+        const int MaximoIntentos = 3;
+
         if(disminuirInventarioDTO.Productos.Count == 0)
             throw new ExepcionDominio("Debe indicar al menos un producto.");
 
