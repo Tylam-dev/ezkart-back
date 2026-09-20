@@ -22,6 +22,21 @@ public class CarritoServicio : ICarritoServicio
 
         if(carrito is null) return new CarritoDTO();
 
+        foreach(var item in carrito.Items)
+        {
+            var articulo = await _clienteHttpInventario.BuscarProducto(item.ProductoId, item.Codigo);
+
+            if(articulo.Excepcion is ExepcionArticuloNoEncontrado)
+            {
+                item.Agotado = true;
+                continue;
+            }
+
+            if(!articulo.Exitoso) throw articulo.Excepcion!;
+
+            item.Agotado = articulo.Valor!.Existencia < item.Cantidad;
+        }
+
         return MapearCarritoADTO(carrito);
     }
     public async Task<CarritoDTO> AgregarProducto(Guid usuarioId, AgregarProductoCarritoDTO agregarProductoCarritoDTO)
@@ -109,7 +124,8 @@ public class CarritoServicio : ICarritoServicio
         {
             ProductoId = item.ProductoId,
             Codigo = item.Codigo,
-            Cantidad = item.Cantidad
+            Cantidad = item.Cantidad,
+            Agotado = item.Agotado
         });
 
         return carritoDTO;

@@ -10,4 +10,5 @@ public class CarritoItemDTO
     public string Codigo { get; set; } = null!;
     [Required]
     public int Cantidad { get; set; }
+    public bool Agotado { get; set; }
 }
