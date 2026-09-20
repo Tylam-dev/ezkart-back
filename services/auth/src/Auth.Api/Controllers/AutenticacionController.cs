@@ -150,7 +150,7 @@ public class AutenticacionController : ControllerBase
         });
         Response.Cookies.Delete(keyRefreshToken, new CookieOptions
         {
-            Path = "/auth", Secure = true, SameSite = SameSiteMode.Lax
+            Path = "/auth/refresh", Secure = true, SameSite = SameSiteMode.Lax
         });
 
         _logger.LogInformation("Cookies revocadas");
