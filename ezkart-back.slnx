@@ -9,4 +9,9 @@
     <Project Path="services/auth/src/Auth.Infrastructure/Auth.Infrastructure.csproj" />
     <Project Path="services/auth/tests/Auth.UnitTests/Auth.UnitTests.csproj" />
   </Folder>
+  <Folder Name="/Inventario/">
+    <Project Path="services/inventario/src/Inventario.Application/Inventario.Application.csproj" />
+    <Project Path="services/inventario/src/Inventario.Domain/Inventario.Domain.csproj" />
+    <Project Path="services/inventario/src/Inventario.Infrastructure/Inventario.Infrastructure.csproj" />
+  </Folder>
 </Solution>
