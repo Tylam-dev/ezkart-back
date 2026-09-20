@@ -41,10 +41,19 @@ public class AutenticacionServicio : IAutenticacionServicio
         
         await _repositorioAutenticacion.GuardarRefresToken(refresToken.Valor, usuario.Valor.Id);
 
+        var usuarioDTO = new UsuarioDTO()
+        {
+            Nombre = usuario.Valor.Nombre,
+            NombreUsuario = usuario.Valor.NombreUsuario,
+            CorreoElectronico = usuario.Valor.CorreoElectronico.Valor,
+            Rol = usuario.Valor.Rol.Nombre
+        };
+
         var dto = new LoggedDTO()
         {
             token = token.Valor,
-            refreshToken = refresToken.Valor 
+            refreshToken = refresToken.Valor,
+            Usuario = usuarioDTO 
         };
         return dto;
     }
@@ -79,6 +88,23 @@ public class AutenticacionServicio : IAutenticacionServicio
 
         if(!token.Exitoso) throw token.Excepcion ?? new Exception("Servicio no disponible en este momento");
 
-        return token.Valor; 
+        return token.Valor;
+    }
+    public async Task<UsuarioDTO> ObtenerUsuarioSesion(Guid usuarioId)
+    {
+        var usuario = await _repositorioAutenticacion.ObtenerUsuarioId(usuarioId);
+
+        if(!usuario.Exitoso) throw usuario.Excepcion ?? new Exception("Servicio no disponible en este momento");
+
+        if(usuario.Valor is null) throw new CredencialesInvalidas();
+
+        var usuarioDTO = new UsuarioDTO()
+        {
+            Nombre = usuario.Valor.Nombre,
+            NombreUsuario = usuario.Valor.NombreUsuario,
+            CorreoElectronico = usuario.Valor.CorreoElectronico.Valor,
+            Rol = usuario.Valor.Rol.Nombre
+        };
+        return usuarioDTO;
     }
 }

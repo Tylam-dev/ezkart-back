@@ -24,26 +24,9 @@ public class AutenticacionController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginDTO loginDTO)
     {
+        LoggedDTO? session;
         try{
-            var session = await _autenticacionServicio.LoginAsync(loginDTO);
-            
-            Response.Cookies.Append(keyAccessToken, session.token.Valor, new CookieOptions
-            {
-               HttpOnly = true,
-               Secure = true,
-               SameSite = SameSiteMode.Lax,
-               Expires = session.token.Expiracion,
-               Path = "/"
-            });
-
-            Response.Cookies.Append(keyRefreshToken, session.refreshToken.Token, new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.Lax,
-                Expires = session.refreshToken.Expiracion,
-                Path = "/auth/refresh"
-            });
+            session = await _autenticacionServicio.LoginAsync(loginDTO);
         }
         catch (CredencialesInvalidas ex)
         {
@@ -56,9 +39,53 @@ public class AutenticacionController : ControllerBase
             return StatusCode(500, new { Message = "Servicio no disponible" });
         }
 
+        Response.Cookies.Append(keyAccessToken, session.token.Valor, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Lax,
+                Expires = session.token.Expiracion,
+                Path = "/"
+            });
+
+            Response.Cookies.Append(keyRefreshToken, session.refreshToken.Token, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Lax,
+                Expires = session.refreshToken.Expiracion,
+                Path = "/auth/refresh"
+            });
         _logger.LogInformation("Usuario autenticado");
 
-        return Ok();
+        return Ok(session.Usuario);
+    }
+    [Authorize]
+    [HttpGet("me")]
+    public async Task<IActionResult> ObtenerSesion()
+    {
+        try
+        {
+            var usuarioId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (usuarioId is null || !Guid.TryParse(usuarioId, out var usuarioGuid))
+                return Unauthorized();
+
+            var usuario = await _autenticacionServicio.ObtenerUsuarioSesion(usuarioGuid);
+
+            _logger.LogInformation("Sesion vigente");
+
+            return Ok(usuario);
+        }
+        catch (CredencialesInvalidas ex)
+        {
+            _logger.LogWarning(ex.Message);
+            return Unauthorized(new { Message = ex.Message });
+        }
+        catch (System.Exception ex)
+        {
+            _logger.LogError(ex, "Error Inesperado");
+            return StatusCode(500, new { Message = "Servicio no disponible" });
+        }
     }
     [Authorize]
     [HttpGet("refresh")]
