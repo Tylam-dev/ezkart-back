@@ -93,6 +93,38 @@ internal class RepositorioInvenario : IRepositorioInventario
             return Resultado<Producto?>.Error("Error en DB", ex);
         }
     }
+    public async Task<Resultado<Producto?>> ObtenerProductoPorIdYCodigo(Guid productoId, string codigo)
+    {
+        try
+        {
+            var resultado = Resultado<Producto?>.Exito(null);
+
+            var producto = await _context.Producto
+                .Where(p => p.Id == productoId &&
+                            p.Codigo == codigo &&
+                            p.Estado == Domain.Enums.EstadoEnum.Activo)
+                .FirstOrDefaultAsync();
+
+            if(producto is null) return resultado;
+
+            var productoMapeado = new Producto()
+            {
+                Id = producto.Id,
+                Codigo = producto.Codigo,
+                Nombre = producto.Nombre,
+                Precio = producto.Precio,
+                Existencia = producto.Existencia,
+                Version = producto.Version
+            };
+            resultado.Valor = productoMapeado;
+
+            return resultado;
+        }
+        catch (System.Exception ex)
+        {
+            return Resultado<Producto?>.Error("Error en DB", ex);
+        }
+    }
     public async Task<Resultado<List<Producto>>> ObtenerListaProductoPorId(List<Guid> productoIds)
     {
         try

@@ -88,4 +88,14 @@ public class InvetarioServicio : IInvetarioServicio
 
         return producto.Valor!;
     }
+    public async Task<Producto> ObtenerProductoPorIdYCodigo(Guid productoId, string codigo)
+    {
+        var producto = await _repositorioInventario.ObtenerProductoPorIdYCodigo(productoId, codigo);
+
+        if(!producto.Exitoso) throw producto.Excepcion!;
+
+        if(producto.Valor is null) throw new ExepcionProductoNoEncontrado();
+
+        return producto.Valor;
+    }
 }

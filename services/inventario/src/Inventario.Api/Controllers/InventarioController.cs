@@ -61,6 +61,28 @@ public class InventarioController : ControllerBase
             return StatusCode(500, new { Message = "Servicio no disponible" });
         }
     }
+    [HttpGet("buscar")]
+    public async Task<IActionResult> BuscarProducto([FromQuery] Guid productoId, [FromQuery] string codigo)
+    {
+        try
+        {
+            var producto = await _inventarioServicio.ObtenerProductoPorIdYCodigo(productoId, codigo);
+
+            _logger.LogInformation("Producto encontrado");
+
+            return Ok(producto);
+        }
+        catch (ExepcionProductoNoEncontrado ex)
+        {
+            _logger.LogWarning(ex.Message);
+            return NotFound(new { Message = ex.Message });
+        }
+        catch (System.Exception ex)
+        {
+            _logger.LogError(ex, "Error Inesperado");
+            return StatusCode(500, new { Message = "Servicio no disponible" });
+        }
+    }
     [HttpPost("disminuir")]
     public async Task<IActionResult> DisminuirInventario([FromBody] DisminuirInventarioDTO disminuirInventarioDTO)
     {

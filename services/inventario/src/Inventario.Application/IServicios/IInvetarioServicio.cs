@@ -11,5 +11,6 @@ public interface IInvetarioServicio
         PaginacionQuery<ProductosQuery> query
     );
     Task<Producto?> ObtenerProductoPorId(Guid productoId);
+    Task<Producto> ObtenerProductoPorIdYCodigo(Guid productoId, string codigo);
     Task<bool> DisminuirInventario(DisminuirInventarioDTO disminuirInventarioDTO);
 }
