@@ -22,11 +22,12 @@ internal class RepositorioInvenario : IRepositorioInventario
         try
         {
             var query = _context.Producto
-                .Where(p => p.Estado == Domain.Enums.EstadoEnum.Activo);
+                .Where(p => p.Estado == (char)Domain.Enums.EstadoEnum.Activo);
 
             var totalProductos = await query.CountAsync();
 
             var productos = await query
+                .Where(p => p.Estado == (char)Domain.Enums.EstadoEnum.Activo)
                 .Skip(queryProductos.Saltos)
                 .Take(queryProductos.TamanoPagina)
                 .ToListAsync();
@@ -70,7 +71,7 @@ internal class RepositorioInvenario : IRepositorioInventario
 
             var producto = await _context.Producto
                 .Where(p => p.Id == productoId &&
-                            p.Estado == Domain.Enums.EstadoEnum.Activo)
+                            p.Estado == (char)Domain.Enums.EstadoEnum.Activo)
                 .FirstOrDefaultAsync();
             
             if(producto is null) return resultado;
@@ -102,7 +103,7 @@ internal class RepositorioInvenario : IRepositorioInventario
             var producto = await _context.Producto
                 .Where(p => p.Id == productoId &&
                             p.Codigo == codigo &&
-                            p.Estado == Domain.Enums.EstadoEnum.Activo)
+                            p.Estado == (char)Domain.Enums.EstadoEnum.Activo)
                 .FirstOrDefaultAsync();
 
             if(producto is null) return resultado;
@@ -134,7 +135,7 @@ internal class RepositorioInvenario : IRepositorioInventario
             var productos = await _context.Producto
                 .AsNoTracking()
                 .Where(p => productoIds.Contains(p.Id) &&
-                            p.Estado == Domain.Enums.EstadoEnum.Activo)
+                            p.Estado == (char)Domain.Enums.EstadoEnum.Activo)
                 .ToListAsync();
 
             foreach(var producto in productos)

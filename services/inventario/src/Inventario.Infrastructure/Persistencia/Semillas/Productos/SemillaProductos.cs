@@ -67,7 +67,7 @@ internal class SemillaProductos : ISemilla
                 Precio = deseado.Precio,
                 Existencia = deseado.Existencia,
                 FechaCreacion = DateTime.UtcNow,
-                Estado = EstadoEnum.Activo
+                Estado = (char)EstadoEnum.Activo
             });
             _logger.LogInformation("Producto {Codigo} creado", deseado.Codigo);
         }

@@ -24,7 +24,7 @@ internal class RepositorioCarrito : IRepositorioCarrito
             var carrito = await _context.Carrito
                 .Include(c => c.Items)
                 .Where(c => c.UsuarioId == usuarioId &&
-                            c.Estado == EstadoEnum.Activo)
+                            c.Estado == (char)EstadoEnum.Activo)
                 .FirstOrDefaultAsync();
 
             if(carrito is null) return resultado;

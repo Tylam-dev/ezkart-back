@@ -11,7 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Auth.Infrastructure.Persistencia.Migraciones
 {
     [DbContext(typeof(AuthDBContext))]
-    [Migration("20260919234142_Inicial")]
+    [Migration("20260921004217_Inicial")]
     partial class Inicial
     {
         /// <inheritdoc />
@@ -32,8 +32,8 @@ namespace Auth.Infrastructure.Persistencia.Migraciones
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("Estado")
-                        .HasColumnType("integer")
+                    b.Property<char>("Estado")
+                        .HasColumnType("char(1)")
                         .HasColumnName("estado");
 
                     b.Property<DateTime>("Expiracion")
@@ -76,8 +76,8 @@ namespace Auth.Infrastructure.Persistencia.Migraciones
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("Estado")
-                        .HasColumnType("integer")
+                    b.Property<char>("Estado")
+                        .HasColumnType("char(1)")
                         .HasColumnName("estado");
 
                     b.Property<DateTime?>("FechaActualizacion")
@@ -118,8 +118,8 @@ namespace Auth.Infrastructure.Persistencia.Migraciones
                         .HasColumnType("text")
                         .HasColumnName("correo_electronico");
 
-                    b.Property<int>("Estado")
-                        .HasColumnType("integer")
+                    b.Property<char>("Estado")
+                        .HasColumnType("char(1)")
                         .HasColumnName("estado");
 
                     b.Property<DateTime?>("FechaActualizacion")

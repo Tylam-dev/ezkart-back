@@ -11,7 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Compras.Infrastructure.Persistencia.Migraciones
 {
     [DbContext(typeof(ComprasDBContext))]
-    [Migration("20260920184057_Inicial")]
+    [Migration("20260921003844_Inicial")]
     partial class Inicial
     {
         /// <inheritdoc />
@@ -31,10 +31,8 @@ namespace Compras.Infrastructure.Persistencia.Migraciones
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
-                    b.Property<int>("Estado")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(65)
+                    b.Property<char>("Estado")
+                        .HasColumnType("char(1)")
                         .HasColumnName("estado");
 
                     b.Property<DateTime?>("FechaActualizacion")
@@ -83,10 +81,8 @@ namespace Compras.Infrastructure.Persistencia.Migraciones
                         .HasColumnType("text")
                         .HasColumnName("codigo_producto");
 
-                    b.Property<int>("Estado")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(65)
+                    b.Property<char>("Estado")
+                        .HasColumnType("char(1)")
                         .HasColumnName("estado");
 
                     b.Property<DateTime?>("FechaActualizacion")
@@ -126,10 +122,8 @@ namespace Compras.Infrastructure.Persistencia.Migraciones
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
-                    b.Property<int>("Estado")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(65)
+                    b.Property<char>("Estado")
+                        .HasColumnType("char(1)")
                         .HasColumnName("estado");
 
                     b.Property<DateTime?>("FechaActualizacion")
@@ -180,10 +174,8 @@ namespace Compras.Infrastructure.Persistencia.Migraciones
                         .HasColumnType("uuid")
                         .HasColumnName("descuento_temporada");
 
-                    b.Property<int>("Estado")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(65)
+                    b.Property<char>("Estado")
+                        .HasColumnType("char(1)")
                         .HasColumnName("estado");
 
                     b.Property<int>("EstadoOrden")
@@ -238,10 +230,8 @@ namespace Compras.Infrastructure.Persistencia.Migraciones
                         .HasColumnType("text")
                         .HasColumnName("codigo_producto");
 
-                    b.Property<int>("Estado")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(65)
+                    b.Property<char>("Estado")
+                        .HasColumnType("char(1)")
                         .HasColumnName("estado");
 
                     b.Property<DateTime?>("FechaActualizacion")

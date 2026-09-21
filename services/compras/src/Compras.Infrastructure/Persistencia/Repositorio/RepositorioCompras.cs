@@ -25,7 +25,7 @@ internal class RepositorioCompras : IRepositorioCompras
         {
             var query = _context.Orden
                 .Where(o => o.UsuarioId == usuarioId &&
-                            o.Estado == EstadoEnum.Activo);
+                            o.Estado == (char)EstadoEnum.Activo);
 
             var filtro = queryOrdenes.Filtro;
 
@@ -111,7 +111,7 @@ internal class RepositorioCompras : IRepositorioCompras
                 .Include(o => o.DescuentoTemporada)
                 .Where(o => o.Id == ordenId &&
                             o.UsuarioId == usuarioId &&
-                            o.Estado == EstadoEnum.Activo)
+                            o.Estado == (char)EstadoEnum.Activo)
                 .FirstOrDefaultAsync();
 
             if(orden is null) return resultado;
@@ -192,7 +192,7 @@ internal class RepositorioCompras : IRepositorioCompras
             var resultado = Resultado<List<DescuentoTemporada>>.Exito(new List<DescuentoTemporada>());
 
             var descuentos = await _context.DescuentoTemporada
-                .Where(d => d.Estado == EstadoEnum.Activo &&
+                .Where(d => d.Estado == (char)EstadoEnum.Activo &&
                             d.FechaDesde <= fecha &&
                             d.FechaHasta >= fecha)
                 .ToListAsync();
@@ -222,7 +222,7 @@ internal class RepositorioCompras : IRepositorioCompras
 
             var descuento = await _context.DescuentoTemporada
                 .Where(d => d.Id == descuentoId &&
-                            d.Estado == EstadoEnum.Activo)
+                            d.Estado == (char)EstadoEnum.Activo)
                 .FirstOrDefaultAsync();
 
             if(descuento is null) return resultado;

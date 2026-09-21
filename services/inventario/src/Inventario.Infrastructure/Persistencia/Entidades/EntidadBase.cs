@@ -16,8 +16,8 @@ public abstract class EntidadBase
     [Column("fecha_eliminacion")]
     public DateTime? FechaEliminacion { get; set; }
     [Required]
-    [Column("estado")]
-    public EstadoEnum Estado { get; set; }
+    [Column("estado", TypeName = "char(1)")]
+    public char Estado { get; set; } = (char)EstadoEnum.Activo;
 }
     public abstract class EntidadBaseConfiguration<T>
     : IEntityTypeConfiguration<T>
@@ -28,8 +28,5 @@ public abstract class EntidadBase
         builder.Property(x => x.FechaCreacion)
             .HasColumnType("timestamp with time zone")
             .HasDefaultValueSql("CURRENT_TIMESTAMP");
-        
-        builder.Property(x => x.Estado)
-            .HasDefaultValue(EstadoEnum.Activo.ToString());
     }
 }

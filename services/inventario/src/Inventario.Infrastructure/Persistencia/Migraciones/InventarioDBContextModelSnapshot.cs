@@ -32,8 +32,8 @@ namespace Inventario.Infrastructure.Persistencia.Migraciones
                         .HasColumnType("text")
                         .HasColumnName("codigo");
 
-                    b.Property<int>("Estado")
-                        .HasColumnType("integer")
+                    b.Property<char>("Estado")
+                        .HasColumnType("char(1)")
                         .HasColumnName("estado");
 
                     b.Property<int>("Existencia")

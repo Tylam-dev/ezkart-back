@@ -11,7 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Inventario.Infrastructure.Persistencia.Migraciones
 {
     [DbContext(typeof(InventarioDBContext))]
-    [Migration("20260920055514_Inicial")]
+    [Migration("20260921004220_Inicial")]
     partial class Inicial
     {
         /// <inheritdoc />
@@ -35,8 +35,8 @@ namespace Inventario.Infrastructure.Persistencia.Migraciones
                         .HasColumnType("text")
                         .HasColumnName("codigo");
 
-                    b.Property<int>("Estado")
-                        .HasColumnType("integer")
+                    b.Property<char>("Estado")
+                        .HasColumnType("char(1)")
                         .HasColumnName("estado");
 
                     b.Property<int>("Existencia")

@@ -29,8 +29,8 @@ namespace Auth.Infrastructure.Persistencia.Migraciones
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("Estado")
-                        .HasColumnType("integer")
+                    b.Property<char>("Estado")
+                        .HasColumnType("char(1)")
                         .HasColumnName("estado");
 
                     b.Property<DateTime>("Expiracion")
@@ -73,8 +73,8 @@ namespace Auth.Infrastructure.Persistencia.Migraciones
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("Estado")
-                        .HasColumnType("integer")
+                    b.Property<char>("Estado")
+                        .HasColumnType("char(1)")
                         .HasColumnName("estado");
 
                     b.Property<DateTime?>("FechaActualizacion")
@@ -115,8 +115,8 @@ namespace Auth.Infrastructure.Persistencia.Migraciones
                         .HasColumnType("text")
                         .HasColumnName("correo_electronico");
 
-                    b.Property<int>("Estado")
-                        .HasColumnType("integer")
+                    b.Property<char>("Estado")
+                        .HasColumnType("char(1)")
                         .HasColumnName("estado");
 
                     b.Property<DateTime?>("FechaActualizacion")

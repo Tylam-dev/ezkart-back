@@ -22,7 +22,7 @@ namespace Auth.Infrastructure.Persistencia.Migraciones
                     fecha_creacion = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     fecha_actualizacion = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     fecha_eliminacion = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    estado = table.Column<int>(type: "integer", nullable: false)
+                    estado = table.Column<char>(type: "char(1)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -42,7 +42,7 @@ namespace Auth.Infrastructure.Persistencia.Migraciones
                     fecha_creacion = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     fecha_actualizacion = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     fecha_eliminacion = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    estado = table.Column<int>(type: "integer", nullable: false)
+                    estado = table.Column<char>(type: "char(1)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -67,7 +67,7 @@ namespace Auth.Infrastructure.Persistencia.Migraciones
                     fecha_creacion = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     fecha_actualizacion = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     fecha_eliminacion = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    estado = table.Column<int>(type: "integer", nullable: false)
+                    estado = table.Column<char>(type: "char(1)", nullable: false)
                 },
                 constraints: table =>
                 {

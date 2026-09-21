@@ -20,7 +20,7 @@ namespace Compras.Infrastructure.Persistencia.Migraciones
                     fecha_creacion = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
                     fecha_actualizacion = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     fecha_eliminacion = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    estado = table.Column<int>(type: "integer", nullable: false, defaultValue: 65)
+                    estado = table.Column<char>(type: "char(1)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -39,7 +39,7 @@ namespace Compras.Infrastructure.Persistencia.Migraciones
                     fecha_creacion = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
                     fecha_actualizacion = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     fecha_eliminacion = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    estado = table.Column<int>(type: "integer", nullable: false, defaultValue: 65)
+                    estado = table.Column<char>(type: "char(1)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -59,7 +59,7 @@ namespace Compras.Infrastructure.Persistencia.Migraciones
                     fecha_creacion = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
                     fecha_actualizacion = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     fecha_eliminacion = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    estado = table.Column<int>(type: "integer", nullable: false, defaultValue: 65)
+                    estado = table.Column<char>(type: "char(1)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -84,7 +84,7 @@ namespace Compras.Infrastructure.Persistencia.Migraciones
                     fecha_creacion = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
                     fecha_actualizacion = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     fecha_eliminacion = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    estado = table.Column<int>(type: "integer", nullable: false, defaultValue: 65)
+                    estado = table.Column<char>(type: "char(1)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -110,7 +110,7 @@ namespace Compras.Infrastructure.Persistencia.Migraciones
                     fecha_creacion = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
                     fecha_actualizacion = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     fecha_eliminacion = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    estado = table.Column<int>(type: "integer", nullable: false, defaultValue: 65)
+                    estado = table.Column<char>(type: "char(1)", nullable: false)
                 },
                 constraints: table =>
                 {
