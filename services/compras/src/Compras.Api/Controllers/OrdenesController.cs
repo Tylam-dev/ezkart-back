@@ -1,5 +1,7 @@
 using System.Security.Claims;
+using Compras.Application.Exepciones;
 using Compras.Application.Utilidades.Queries;
+using Compras.Domain.Exepcion;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -27,7 +29,65 @@ public class OrdenesController : ControllerBase
         {
             if (!ObtenerUsuarioId(out var usuarioId)) return Unauthorized();
 
-            return Ok();
+            var orden = await _ordenesServicio.FinalizarCompra(usuarioId);
+
+            _logger.LogInformation("Compra finalizada");
+
+            return Ok(orden);
+        }
+        catch (ExepcionDominio ex)
+        {
+            _logger.LogWarning(ex.Message);
+            return BadRequest(new { Message = ex.Message });
+        }
+        catch (ExepcionArticuloNoEncontrado ex)
+        {
+            _logger.LogWarning(ex.Message);
+            return NotFound(new { Message = ex.Message });
+        }
+        catch (ExepcionStockInsuficiente ex)
+        {
+            _logger.LogWarning(ex.Message);
+            return Conflict(new { Message = ex.Message });
+        }
+        catch (ExepcionInventarioNoDisponible ex)
+        {
+            _logger.LogError(ex, ex.Message);
+            return StatusCode(503, new { Message = ex.Message });
+        }
+        catch (System.Exception ex)
+        {
+            _logger.LogError(ex, "Error Inesperado");
+            return StatusCode(500, new { Message = "Servicio no disponible" });
+        }
+    }
+    [HttpGet("preview")]
+    public async Task<IActionResult> PrevisualizarCompra()
+    {
+        try
+        {
+            if (!ObtenerUsuarioId(out var usuarioId)) return Unauthorized();
+
+            var resumen = await _ordenesServicio.PrevisualizarCompra(usuarioId);
+
+            _logger.LogInformation("Resumen de compra entregado");
+
+            return Ok(resumen);
+        }
+        catch (ExepcionDominio ex)
+        {
+            _logger.LogWarning(ex.Message);
+            return BadRequest(new { Message = ex.Message });
+        }
+        catch (ExepcionArticuloNoEncontrado ex)
+        {
+            _logger.LogWarning(ex.Message);
+            return NotFound(new { Message = ex.Message });
+        }
+        catch (ExepcionInventarioNoDisponible ex)
+        {
+            _logger.LogError(ex, ex.Message);
+            return StatusCode(503, new { Message = ex.Message });
         }
         catch (System.Exception ex)
         {

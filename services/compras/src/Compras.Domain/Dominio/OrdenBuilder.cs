@@ -9,6 +9,8 @@ public class OrdenBuilder
     private readonly List<OrdenDetalle> _detalles = new List<OrdenDetalle>();
     private DescuentoTemporada? _descuentoTemporada;
 
+    public decimal Subtotal => _detalles.Sum(d => d.Subtotal);
+
     public OrdenBuilder(Guid usuarioId)
     {
         _usuarioId = usuarioId;

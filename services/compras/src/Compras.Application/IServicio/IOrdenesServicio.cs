@@ -5,7 +5,8 @@ using Compras.Domain.Dominio;
 
 public interface IOrdenesServicio
 {
-    Task<Orden> FinalizarCompra(Guid usuarioId);
+    Task<OrdenDTO> FinalizarCompra(Guid usuarioId);
+    Task<ResumenOrdenDTO> PrevisualizarCompra(Guid usuarioId);
     Task<Paginacion<OrdenDTO>> ObtenerOrdenesPaginado(
         Guid usuarioId,
         PaginacionQuery<OrdenesQuery> query

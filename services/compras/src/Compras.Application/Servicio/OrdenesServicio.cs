@@ -21,7 +21,27 @@ public class OrdenesServicio : IOrdenesServicio
         _repositorioCarrito = repositorioCarrito;
         _clienteHttpInventario = clienteHttpInventario;
     }
-    public async Task<Orden> FinalizarCompra(Guid usuarioId)
+    public async Task<OrdenDTO> FinalizarCompra(Guid usuarioId)
+    {
+        var (orden, disminuirInventarioDTO) = await ConstruirOrden(usuarioId);
+
+        var disminuido = await _clienteHttpInventario.DisminuirInventario(disminuirInventarioDTO);
+
+        if(!disminuido.Exitoso) throw disminuido.Excepcion!;
+
+        var guardada = await _repositorioCompras.GuardarOrden(orden);
+
+        if(!guardada.Exitoso) throw guardada.Excepcion!;
+
+        return MapearOrdenADTO(orden);
+    }
+    public async Task<ResumenOrdenDTO> PrevisualizarCompra(Guid usuarioId)
+    {
+        var (orden, _) = await ConstruirOrden(usuarioId);
+
+        return MapearResumenADTO(orden);
+    }
+    private async Task<(Orden orden, DisminuirInventarioDTO disminuirInventarioDTO)> ConstruirOrden(Guid usuarioId)
     {
         var carrito = await ObtenerCarritoUsuario(usuarioId);
 
@@ -58,19 +78,11 @@ public class OrdenesServicio : IOrdenesServicio
 
         var descuento = descuentos.Valor.OrderByDescending(d => d.FechaCreacion).FirstOrDefault();
 
-        if(descuento is not null) ordenBuilder.AplicarDescuento(descuento);
+        if(descuento is not null && ordenBuilder.Subtotal > 100) ordenBuilder.AplicarDescuento(descuento);
 
         var orden = ordenBuilder.Construir();
 
-        var disminuido = await _clienteHttpInventario.DisminuirInventario(disminuirInventarioDTO);
-
-        if(!disminuido.Exitoso) throw disminuido.Excepcion!;
-
-        var guardada = await _repositorioCompras.GuardarOrden(orden);
-
-        if(!guardada.Exitoso) throw guardada.Excepcion!;
-
-        return orden;
+        return (orden, disminuirInventarioDTO);
     }
     public async Task<Paginacion<OrdenDTO>> ObtenerOrdenesPaginado(
         Guid usuarioId,
@@ -101,18 +113,43 @@ public class OrdenesServicio : IOrdenesServicio
 
         return carrito.Valor;
     }
-    private static Paginacion<OrdenDTO> MapearOrdenesADTO(Paginacion<Orden> ordenes)
+    private static OrdenDTO MapearOrdenADTO(Orden orden)
     {
-        var ordenesDTO = new List<OrdenDTO>();
-
-        foreach(var orden in ordenes.Items) ordenesDTO.Add(new OrdenDTO()
+        return new OrdenDTO()
         {
             Id = orden.Id,
             FechaCreacion = orden.FechaCreacion,
             EstadoOrden = orden.EstadoOrden,
             Total = orden.Total,
             DescuentoTemporadaId = orden.DescuentoTemporada?.Id
-        });
+        };
+    }
+    private static ResumenOrdenDTO MapearResumenADTO(Orden orden)
+    {
+        return new ResumenOrdenDTO()
+        {
+            Detalles = orden.Detalles.Select(d => new OrdenDetalleDTO()
+            {
+                ProductoId = d.ProductoId,
+                Codigo = d.Codigo,
+                Nombre = d.Nombre,
+                PrecioUnitario = d.PrecioUnitario,
+                Cantidad = d.Cantidad,
+                Subtotal = d.Subtotal
+            }).ToList(),
+            Subtotal = orden.Subtotal,
+            DescuentoTemporadaId = orden.DescuentoTemporada?.Id,
+            NombreDescuento = orden.DescuentoTemporada?.Nombre,
+            PorcentajeDescuento = orden.DescuentoTemporada?.Porcentaje ?? 0,
+            MontoDescuento = orden.MontoDescuento,
+            Total = orden.Total
+        };
+    }
+    private static Paginacion<OrdenDTO> MapearOrdenesADTO(Paginacion<Orden> ordenes)
+    {
+        var ordenesDTO = new List<OrdenDTO>();
+
+        foreach(var orden in ordenes.Items) ordenesDTO.Add(MapearOrdenADTO(orden));
 
         return new Paginacion<OrdenDTO>()
         {
