@@ -1,5 +1,6 @@
 using Compras.Application;
 using Compras.Infrastructure.Persistencia.Repositorio;
+using Compras.Infrastructure.Persistencia.Semillas;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,10 +15,16 @@ public static class InyeccionDependencia
             ?? throw new InvalidOperationException("Falta ConnectionStrings:Default");
 
         services.AddDbContext<ComprasDBContext>(o => o.UseNpgsql(cs));
+        AgregarServiciosSemilla(services);
 
         services.AddScoped<IRepositorioCarrito, RepositorioCarrito>();
         services.AddScoped<IRepositorioCompras, RepositorioCompras>();
         return services;
+    }
+    private static void AgregarServiciosSemilla(this IServiceCollection services)
+    {
+        services.AddScoped<SemillaDescuentos>();
+        services.AddScoped<SemilleroGeneral>();
     }
     public static async Task InicializarBaseDatosAsync(this IServiceProvider services)
     {
@@ -25,5 +32,9 @@ public static class InyeccionDependencia
 
         var db = scope.ServiceProvider.GetRequiredService<ComprasDBContext>();
         await db.Database.MigrateAsync();
+
+        await scope.ServiceProvider
+            .GetRequiredService<SemilleroGeneral>()
+            .EjecutarSemillas();
     }
 }
