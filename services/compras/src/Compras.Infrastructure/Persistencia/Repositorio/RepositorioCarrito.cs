@@ -22,7 +22,7 @@ internal class RepositorioCarrito : IRepositorioCarrito
             var resultado = Resultado<Carrito?>.Exito(null);
 
             var carrito = await _context.Carrito
-                .Include(c => c.Items)
+                .Include(c => c.Items.Where(i => i.Estado == (char)EstadoEnum.Activo))
                 .Where(c => c.UsuarioId == usuarioId &&
                             c.Estado == (char)EstadoEnum.Activo)
                 .FirstOrDefaultAsync();
@@ -56,8 +56,9 @@ internal class RepositorioCarrito : IRepositorioCarrito
         try
         {
             var entidad = await _context.Carrito
-                .Include(c => c.Items)
-                .FirstOrDefaultAsync(c => c.Id == carrito.Id);
+                .Include(c => c.Items.Where(i => i.Estado == (char)EstadoEnum.Activo))
+                .FirstOrDefaultAsync(c => c.Id == carrito.Id &&
+                                          c.Estado == (char)EstadoEnum.Activo);
 
             if(entidad is null)
             {
@@ -108,13 +109,40 @@ internal class RepositorioCarrito : IRepositorioCarrito
         {
             var item = await _context.CarritoItem
                 .FirstOrDefaultAsync(i => i.CarritoId == carritoId &&
-                                          i.ProductoId == productoId);
+                                          i.ProductoId == productoId &&
+                                          i.Estado == (char)EstadoEnum.Activo);
 
             if(item is not null)
             {
-                _context.CarritoItem.Remove(item);
+                item.Estado = (char)EstadoEnum.Eliminado;
+                item.FechaEliminacion = DateTime.UtcNow;
+
                 await _context.SaveChangesAsync();
             }
+            return Resultado<bool>.Exito(true);
+        }
+        catch (System.Exception ex)
+        {
+            return Resultado<bool>.Error("Error en DB", ex);
+        }
+    }
+    public async Task<Resultado<bool>> VaciarCarrito(Guid usuarioId)
+    {
+        try
+        {
+            var items = await _context.CarritoItem
+                .Where(i => i.Carrito.UsuarioId == usuarioId &&
+                            i.Estado == (char)EstadoEnum.Activo)
+                .ToListAsync();
+
+            foreach(var item in items)
+            {
+                item.Estado = (char)EstadoEnum.Eliminado;
+                item.FechaEliminacion = DateTime.UtcNow;
+            }
+
+            await _context.SaveChangesAsync();
+
             return Resultado<bool>.Exito(true);
         }
         catch (System.Exception ex)

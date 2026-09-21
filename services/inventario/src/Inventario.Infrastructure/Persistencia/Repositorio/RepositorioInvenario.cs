@@ -182,7 +182,8 @@ internal class RepositorioInvenario : IRepositorioInventario
             var productoIds = productos.Select(p => p.Id).ToList();
 
             var entidades = await _context.Producto
-                .Where(p => productoIds.Contains(p.Id))
+                .Where(p => productoIds.Contains(p.Id) &&
+                            p.Estado == (char)Domain.Enums.EstadoEnum.Activo)
                 .ToDictionaryAsync(p => p.Id);
 
             foreach(var producto in productos)

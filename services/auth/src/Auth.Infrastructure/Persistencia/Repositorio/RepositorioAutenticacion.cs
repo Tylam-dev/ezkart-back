@@ -21,7 +21,8 @@ public class RepositorioAutenticacion : IRepositorioAutenticacion
         {
             var resultado = Resultado<Usuario?>.Exito(null);
             var usuario = await _context.Usuario
-                .Where(u => u.NombreUsuario == nombreUsuario)
+                .Where(u => u.NombreUsuario == nombreUsuario &&
+                            u.Estado == (char)EstadoEnum.Activo)
                 .FirstOrDefaultAsync();
 
             if(usuario is null) return resultado;
@@ -179,7 +180,8 @@ public class RepositorioAutenticacion : IRepositorioAutenticacion
         {
             var resultado = Resultado<Usuario?>.Exito(null);
             var usuario = await _context.Usuario
-                .Where(u => u.Id == usuarioId)
+                .Where(u => u.Id == usuarioId &&
+                            u.Estado == (char)EstadoEnum.Activo)
                 .FirstOrDefaultAsync();
             
             if(usuario is null) return resultado;

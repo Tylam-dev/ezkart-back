@@ -33,6 +33,8 @@ public class OrdenesServicio : IOrdenesServicio
 
         if(!guardada.Exitoso) throw guardada.Excepcion!;
 
+        await VaciarCarrito(usuarioId);
+
         return MapearOrdenADTO(orden);
     }
     public async Task<ResumenOrdenDTO> PrevisualizarCompra(Guid usuarioId)
@@ -78,6 +80,12 @@ public class OrdenesServicio : IOrdenesServicio
 
         var descuento = descuentos.Valor.OrderByDescending(d => d.FechaCreacion).FirstOrDefault();
 
+        /* 
+            Esto es una salida rapida para estipular el descuento pedido,
+            pense en crear un tabla de validaciones de orden y una intermedia para
+            registrar junto con el descuento. Creo un factory de validaciones que reciban
+            una orden y se valida para aplicar el descuento a manera de strategy.
+        */
         if(descuento is not null && ordenBuilder.Subtotal > 100) ordenBuilder.AplicarDescuento(descuento);
 
         var orden = ordenBuilder.Construir();
@@ -112,6 +120,12 @@ public class OrdenesServicio : IOrdenesServicio
         if(!carrito.Exitoso) throw carrito.Excepcion!;
 
         return carrito.Valor;
+    }
+    private async Task VaciarCarrito(Guid usuarioId)
+    {
+        var vaciado = await _repositorioCarrito.VaciarCarrito(usuarioId);
+
+        if(!vaciado.Exitoso) throw vaciado.Excepcion!;
     }
     private static OrdenDTO MapearOrdenADTO(Orden orden)
     {

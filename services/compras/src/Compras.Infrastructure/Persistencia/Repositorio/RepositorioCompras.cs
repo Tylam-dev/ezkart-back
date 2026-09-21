@@ -41,7 +41,7 @@ internal class RepositorioCompras : IRepositorioCompras
             var totalOrdenes = await query.CountAsync();
 
             var ordenes = await query
-                .Include(o => o.Detalles)
+                .Include(o => o.Detalles.Where(d => d.Estado == (char)EstadoEnum.Activo))
                 .Include(o => o.DescuentoTemporada)
                 .OrderByDescending(o => o.FechaCreacion)
                 .Skip(queryOrdenes.Saltos)
@@ -107,7 +107,7 @@ internal class RepositorioCompras : IRepositorioCompras
             var resultado = Resultado<Orden?>.Exito(null);
 
             var orden = await _context.Orden
-                .Include(o => o.Detalles)
+                .Include(o => o.Detalles.Where(d => d.Estado == (char)EstadoEnum.Activo))
                 .Include(o => o.DescuentoTemporada)
                 .Where(o => o.Id == ordenId &&
                             o.UsuarioId == usuarioId &&
