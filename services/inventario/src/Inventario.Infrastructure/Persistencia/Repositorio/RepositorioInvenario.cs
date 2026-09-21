@@ -24,6 +24,23 @@ internal class RepositorioInvenario : IRepositorioInventario
             var query = _context.Producto
                 .Where(p => p.Estado == (char)Domain.Enums.EstadoEnum.Activo);
 
+            var filtro = queryProductos.Filtro;
+
+            if(filtro is not null && !string.IsNullOrWhiteSpace(filtro.Codigo))
+            {
+                var codigo = filtro.Codigo.ToLower();
+                query = query.Where(p => p.Codigo.ToLower().Contains(codigo));
+            }
+
+            if(filtro is not null && !string.IsNullOrWhiteSpace(filtro.Nombre))
+            {
+                var nombre = filtro.Nombre.ToLower();
+                query = query.Where(p => p.Nombre.ToLower().Contains(nombre));
+            }
+
+            if(filtro is not null && filtro.Precio.HasValue)
+                query = query.Where(p => p.Precio == filtro.Precio.Value);
+
             var totalProductos = await query.CountAsync();
 
             var productos = await query
