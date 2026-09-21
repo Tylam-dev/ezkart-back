@@ -19,4 +19,11 @@ public static class InyeccionDependencia
         services.AddScoped<IRepositorioCompras, RepositorioCompras>();
         return services;
     }
+    public static async Task InicializarBaseDatosAsync(this IServiceProvider services)
+    {
+        using var scope = services.CreateScope();
+
+        var db = scope.ServiceProvider.GetRequiredService<ComprasDBContext>();
+        await db.Database.MigrateAsync();
+    }
 }

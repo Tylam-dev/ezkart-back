@@ -45,14 +45,14 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_DB: compras_db
-      POSTGRES_USER: ${COMRPAS_DB_USER}
-      POSTGRES_PASSWORD: ${COMRPAS_DB_PASSWORD}
+      POSTGRES_USER: ${COMPRAS_DB_USER}
+      POSTGRES_PASSWORD: ${COMPRAS_DB_PASSWORD}
     ports:
       - "127.0.0.1:5434:5432"
     volumes:
-      - invt-db-data:/var/lib/postgresql/data
+      - compras-db-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${COMRPAS_DB_USER} -d invt_db"]
+      test: ["CMD-SHELL", "pg_isready -U ${COMPRAS_DB_USER} -d compras_db"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -64,3 +64,4 @@ networks:
 volumes:
   auth-db-data:
   invt-db-data:
+  compras-db-data:

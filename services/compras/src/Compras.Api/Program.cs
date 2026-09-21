@@ -1,3 +1,4 @@
+using Compras.Api.Servicio;
 using Compras.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -44,7 +45,23 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddInfrastructure(builder.Configuration);
 
+builder.Services.AddScoped<ICarritoServicio, CarritoServicio>();
+builder.Services.AddScoped<IOrdenesServicio, OrdenesServicio>();
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddTransient<ReenviarTokenHandler>();
+builder.Services
+    .AddHttpClient<IClienteHttpInventario, ClienteHttpInventario>(cliente =>
+    {
+        var url = builder.Configuration["Inventario:BaseUrl"]
+            ?? throw new InvalidOperationException("Falta Inventario:BaseUrl");
+        cliente.BaseAddress = new Uri(url);
+    })
+    .AddHttpMessageHandler<ReenviarTokenHandler>();
+
 var app = builder.Build();
+
+await app.Services.InicializarBaseDatosAsync();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
