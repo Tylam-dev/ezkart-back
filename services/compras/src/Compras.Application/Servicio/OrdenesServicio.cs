@@ -135,22 +135,29 @@ public class OrdenesServicio : IOrdenesServicio
             FechaCreacion = orden.FechaCreacion,
             EstadoOrden = orden.EstadoOrden,
             Total = orden.Total,
-            DescuentoTemporadaId = orden.DescuentoTemporada?.Id
+            DescuentoTemporadaId = orden.DescuentoTemporada?.Id,
+            Detalles = MapearDetallesADTO(orden),
+            Subtotal = orden.Subtotal,
+            MontoDescuento = orden.MontoDescuento
         };
+    }
+    private static List<OrdenDetalleDTO> MapearDetallesADTO(Orden orden)
+    {
+        return orden.Detalles.Select(d => new OrdenDetalleDTO()
+        {
+            ProductoId = d.ProductoId,
+            Codigo = d.Codigo,
+            Nombre = d.Nombre,
+            PrecioUnitario = d.PrecioUnitario,
+            Cantidad = d.Cantidad,
+            Subtotal = d.Subtotal
+        }).ToList();
     }
     private static ResumenOrdenDTO MapearResumenADTO(Orden orden)
     {
         return new ResumenOrdenDTO()
         {
-            Detalles = orden.Detalles.Select(d => new OrdenDetalleDTO()
-            {
-                ProductoId = d.ProductoId,
-                Codigo = d.Codigo,
-                Nombre = d.Nombre,
-                PrecioUnitario = d.PrecioUnitario,
-                Cantidad = d.Cantidad,
-                Subtotal = d.Subtotal
-            }).ToList(),
+            Detalles = MapearDetallesADTO(orden),
             Subtotal = orden.Subtotal,
             DescuentoTemporadaId = orden.DescuentoTemporada?.Id,
             NombreDescuento = orden.DescuentoTemporada?.Nombre,
